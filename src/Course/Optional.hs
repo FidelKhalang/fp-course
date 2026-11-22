@@ -7,6 +7,8 @@ import qualified Control.Applicative as A
 import qualified Control.Monad as M
 import Course.Core
 import qualified Prelude as P
+import GHC.Base (undefined)
+import Data.Maybe (Maybe(Nothing))
 
 -- | The `Optional` data type contains 0 or 1 value.
 --
@@ -27,8 +29,8 @@ fullOr ::
   a
   -> Optional a
   -> a
-fullOr =
-  error "todo: Course.Optional#fullOr"
+fullOr x Empty  = x
+fullOr _ (Full y) = y 
 
 -- | Map the given function on the possible value.
 --
@@ -41,8 +43,10 @@ mapOptional ::
   (a -> b)
   -> Optional a
   -> Optional b
-mapOptional =
-  error "todo: Course.Optional#mapOptional"
+mapOptional x y = case y of
+                  Empty -> Empty
+                  Full y -> Full (x y)
+                  
 
 -- | Bind the given function on the possible value.
 --
@@ -58,8 +62,8 @@ bindOptional ::
   (a -> Optional b)
   -> Optional a
   -> Optional b
-bindOptional =
-  error "todo: Course.Optional#bindOptional"
+bindOptional _ Empty        = Empty
+bindOptional fnc (Full val) = fnc val
 
 -- | Try the first optional for a value. If it has a value, use it; otherwise,
 -- use the second value.
@@ -79,8 +83,10 @@ bindOptional =
   Optional a
   -> Optional a
   -> Optional a
-(<+>) =
-  error "todo: Course.Optional#(<+>)"
+(<+>) (Full val) _ = Full val
+(<+>) _ (Full val) = Full val
+(<+>) Empty Empty  = Empty
+
 
 -- | Replaces the Full and Empty constructors in an optional.
 --
@@ -94,8 +100,8 @@ optional ::
   -> b
   -> Optional a
   -> b
-optional =
-  error "todo: Course.Optional#optional"
+optional func x Empty       = x
+optional func x (Full val2) = func val2
 
 applyOptional :: Optional (a -> b) -> Optional a -> Optional b
 applyOptional f a = bindOptional (\f' -> mapOptional f' a) f
