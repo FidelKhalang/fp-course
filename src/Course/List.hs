@@ -133,7 +133,7 @@ map ::
   (a -> b)
   -> List a
   -> List b
-map func Nil = Nil
+map _ Nil        = Nil
 map func (h:.ls) = func h :. map func ls
 
 -- | Return elements satisfying the given predicate.
@@ -150,8 +150,8 @@ filter ::
   (a -> Bool)
   -> List a
   -> List a
-filter =
-  error "todo: Course.List#filter"
+filter _ Nil        = Nil
+filter func (h:.ls) = if func h == True then h :. filter func ls else filter func ls
 
 -- | Append two lists to a new list.
 --
@@ -169,8 +169,9 @@ filter =
   List a
   -> List a
   -> List a
-(++) =
-  error "todo: Course.List#(++)"
+(++) x Nil       = x
+(++) Nil x       = x
+(++) (h:.ls) lst = h:. (++) ls lst
 
 infixr 5 ++
 
@@ -187,8 +188,8 @@ infixr 5 ++
 flatten ::
   List (List a)
   -> List a
-flatten =
-  error "todo: Course.List#flatten"
+flatten Nil        = Nil
+flatten (ls1:.ls2) = ls1 ++ flatten ls2
 
 -- | Map a function then flatten to a list.
 --
