@@ -205,8 +205,7 @@ flatMap ::
   (a -> List b)
   -> List a
   -> List b
-flatMap =
-  error "todo: Course.List#flatMap"
+flatMap func lst = flatten (map func lst)
 
 -- | Flatten a list of lists to a list (again).
 -- HOWEVER, this time use the /flatMap/ function that you just wrote.
@@ -215,8 +214,8 @@ flatMap =
 flattenAgain ::
   List (List a)
   -> List a
-flattenAgain =
-  error "todo: Course.List#flattenAgain"
+flattenAgain Nil = Nil
+flattenAgain (ls1:.ls2) = flatMap (++ls1) ls2
 
 -- | Convert a list of optional values to an optional list of values.
 --
@@ -240,8 +239,7 @@ flattenAgain =
 seqOptional ::
   List (Optional a)
   -> Optional (List a)
-seqOptional =
-  error "todo: Course.List#seqOptional"
+seqOptional (h:.ls) = if h == Empty then Empty else Full (h :. seqOptional ls)
 
 -- | Find the first element in the list matching the predicate.
 --
