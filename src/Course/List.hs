@@ -239,7 +239,7 @@ flattenAgain (ls1:.ls2) = flatMap (++ls1) ls2
 seqOptional ::
   List (Optional a)
   -> Optional (List a)
-seqOptional (h:.ls) = if h == Empty then Empty else Full (h :. seqOptional ls)
+seqOptional = undefined
 
 -- | Find the first element in the list matching the predicate.
 --
