@@ -93,7 +93,7 @@ headOr _ (h:._) = h
 product ::
   List Int
   -> Int
-product = foldRight(*) 1
+product = foldRight (*) 1
 
 -- | Sum the elements of the list.
 --
@@ -118,8 +118,8 @@ sum = foldRight (+) 0
 length ::
   List a
   -> Int
-length Nil     = 0
-length (_:.ls) = 1 + length ls
+length = foldRight (\_ acc -> acc + 1) 0
+
 
 -- | Map the given function on each element of the list.
 --
@@ -133,8 +133,9 @@ map ::
   (a -> b)
   -> List a
   -> List b
-map _ Nil        = Nil
-map func (h:.ls) = func h :. map func ls
+map func = foldRight (\x acc -> func x :. acc) Nil
+
+
 
 -- | Return elements satisfying the given predicate.
 --
@@ -150,8 +151,7 @@ filter ::
   (a -> Bool)
   -> List a
   -> List a
-filter _ Nil        = Nil
-filter func (h:.ls) = if func h == True then h :. filter func ls else filter func ls
+filter func = foldRight (\x acc -> if func x then x:.acc else acc) Nil
 
 -- | Append two lists to a new list.
 --
@@ -188,8 +188,7 @@ infixr 5 ++
 flatten ::
   List (List a)
   -> List a
-flatten Nil        = Nil
-flatten (ls1:.ls2) = ls1 ++ flatten ls2
+flatten = foldRight (++) Nil
 
 -- | Map a function then flatten to a list.
 --
