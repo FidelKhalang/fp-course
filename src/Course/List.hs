@@ -172,9 +172,7 @@ filter func = foldRight (\x acc -> if func x then x:.acc else acc) Nil
   List a
   -> List a
   -> List a
-(++) x Nil       = x
-(++) Nil x       = x
-(++) (h:.ls) lst = h:. (++) ls lst
+(++) ls1 ls2 = foldRight (:.) ls2 ls1
 
 infixr 5 ++
 
