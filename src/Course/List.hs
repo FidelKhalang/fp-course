@@ -22,6 +22,9 @@ import qualified System.Environment as E
 import qualified Prelude as P
 import qualified Numeric as N
 import GHC.Num (Num)
+import GHC.Stack.Types (CallStack(EmptyCallStack))
+import System.Posix.Internals (lstat)
+import Data.Bool (Bool(False, True))
 
 
 -- $setup
@@ -213,8 +216,7 @@ flatMap func lst = flatten (map func lst)
 flattenAgain ::
   List (List a)
   -> List a
-flattenAgain Nil = Nil
-flattenAgain (ls1:.ls2) = flatMap (++ls1) ls2
+flattenAgain  = flatMap id
 
 -- | Convert a list of optional values to an optional list of values.
 --
@@ -238,7 +240,13 @@ flattenAgain (ls1:.ls2) = flatMap (++ls1) ls2
 seqOptional ::
   List (Optional a)
   -> Optional (List a)
-seqOptional = undefined
+seqOptional xs = case xs of
+                  Nil -> Full Nil
+                  (h:.lst) -> case h of
+                    Empty  -> Empty
+                    Full x -> case seqOptional lst of
+                      Empty -> Empty
+                      Full rest -> Full (x:.rest)
 
 -- | Find the first element in the list matching the predicate.
 --
@@ -260,8 +268,7 @@ find ::
   (a -> Bool)
   -> List a
   -> Optional a
-find =
-  error "todo: Course.List#find"
+find func = foldRight (\x acc -> if func x then Full x else acc) Empty
 
 -- | Determine if the length of the given list is greater than 4.
 --
@@ -279,8 +286,9 @@ find =
 lengthGT4 ::
   List a
   -> Bool
-lengthGT4 =
-  error "todo: Course.List#lengthGT4"
+
+lengthGT4 (_:._:._:._:._:._) = True
+lengthGT4 _                  = False
 
 -- | Reverse a list.
 --
@@ -296,8 +304,7 @@ lengthGT4 =
 reverse ::
   List a
   -> List a
-reverse =
-  error "todo: Course.List#reverse"
+reverse = foldLeft (\acc x -> x:.acc) Nil
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
@@ -311,8 +318,7 @@ produce ::
   (a -> a)
   -> a
   -> List a
-produce =
-  error "todo: Course.List#produce"
+produce func x = x:. produce func (func x)
 
 -- | Do anything other than reverse a list.
 -- Is it even possible?
